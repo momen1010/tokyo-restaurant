@@ -6,3 +6,5 @@ dist
 serviceAccountKey*.json
 .firebase
 firebase-debug.log
+functions/lib
+functions/node_modules

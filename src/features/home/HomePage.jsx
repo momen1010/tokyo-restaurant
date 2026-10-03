@@ -1,17 +1,21 @@
 import { Link } from 'react-router-dom'
-import Button from '../../shared/ui/Button.jsx'
-import Card from '../../shared/ui/Card.jsx'
-import { formatEGP } from '../../shared/lib/money.js'
-import { useMenu } from '../menu/MenuProvider.jsx'
-import ProductArt from '../menu/components/ProductArt.jsx'
+import Button from '@/shared/ui/Button.jsx'
+import Card from '@/shared/ui/Card.jsx'
+import { formatEGP } from '@/shared/lib/money.js'
+import { useMenu } from '@/features/menu/MenuProvider.jsx'
+import ProductArt from '@/features/menu/components/ProductArt.jsx'
 import HeroSlider from './components/HeroSlider.jsx'
 
 export default function HomePage() {
   const { categories, featured, loading } = useMenu()
+
   return (
     <>
       <HeroSlider />
-      {loading ? <p className="container-page py-14 text-paper/60">جاري تحميل المنيو...</p> : (
+
+      {loading ? (
+        <p className="container-page py-14 text-paper/60">جاري تحميل المنيو...</p>
+      ) : (
         <>
           <section className="container-page py-14" aria-labelledby="cats">
             <h2 id="cats" className="mb-6 text-3xl font-bold">الأقسام</h2>
@@ -20,8 +24,11 @@ export default function HomePage() {
                 <li key={c.id}>
                   <Link to={`/menu#${c.id}`} className="block">
                     <Card interactive>
-                      <ProductArt name={c.name} />
-                      <div className="p-4"><h3 className="text-lg font-bold">{c.name}</h3><p className="text-sm text-paper/60">{c.tagline}</p></div>
+                      <ProductArt name={c.name} src={c.imageUrl} />
+                      <div className="p-4">
+                        <h3 className="text-lg font-bold">{c.name}</h3>
+                        <p className="text-sm text-paper/60">{c.tagline}</p>
+                      </div>
                     </Card>
                   </Link>
                 </li>
@@ -40,7 +47,10 @@ export default function HomePage() {
                   <Link to={`/menu#${p.categoryId}`}>
                     <Card interactive>
                       <ProductArt name={p.name} src={p.imageUrl} />
-                      <div className="p-4"><h3 className="font-bold">{p.name}</h3><p className="text-blood-bright">{formatEGP(p.basePrice)}</p></div>
+                      <div className="p-4">
+                        <h3 className="font-bold">{p.name}</h3>
+                        <p className="text-blood-bright">{formatEGP(p.basePrice)}</p>
+                      </div>
                     </Card>
                   </Link>
                 </li>

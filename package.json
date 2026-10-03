@@ -4,14 +4,16 @@
   "version": "0.3.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "node --test tests/cart.test.js",
-    "emulators": "firebase emulators:start --only auth,firestore,storage",
-    "seed": "node scripts/seed.mjs",
-    "test:rules": "firebase emulators:exec --only firestore \"node --test tests/rules.test.js\""
-  },
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "test": "node --test tests/cart.test.js",
+  "emulators": "firebase emulators:start --project demo-tokyo --only auth,firestore,functions,storage",
+  "seed": "node scripts/seed.mjs",
+  "test:rules": "firebase emulators:exec --only firestore \"node --test tests/rules.test.js tests/auth.rules.test.js\"",
+  "test:orders": "npm --prefix functions run build && node --test tests/order.test.js",
+  "test:e2e": "npm --prefix functions run build && firebase emulators:exec --project demo-tokyo --only auth,firestore,functions \"node --test tests/order-flow.e2e.test.js\""
+},
   "dependencies": {
     "firebase": "^10.14.1",
     "react": "^18.3.1",
