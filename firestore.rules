@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function signedIn() { return request.auth != null; }
+    // admin: STRICT boolean true from a Custom Claim (set only by Admin SDK). 'true' (string) or false do not pass.
+    function isAdmin() { return signedIn() && request.auth.token.get('admin', false) == true; }
+    function role() { return signedIn() ? request.auth.token.get('role', null) : null; }
+    // Staff = admins + operational roles. `role: 'admin'` WITHOUT admin:true gets nothing.
+    function isStaff() { return isAdmin() || (role() != null && role() in ['kitchen', 'delivery', 'cashier']); }
+    function isSelf(uid) { return signedIn() && request.auth.uid == uid; }
+    function validMoney(v) { return v is int && v >= 0 && v <= 10000000; }
+    function validName(v) { return v is string && v.size() > 0 && v.size() <= 120; }
+
+    // ---------- catalog: public READ of active docs, admin WRITE ----------
+    match /categories/{id} {
+      allow read: if resource.data.isActive == true || isStaff();
+      allow create, update: if isAdmin() && validName(request.resource.data.name)
+        && request.resource.data.sortOrder is int && request.resource.data.isActive is bool;
+      allow delete: if isAdmin();
+    }
+    match /products/{id} {
+      allow read: if resource.data.isActive == true || isStaff();
+      allow create, update: if isAdmin() && validName(request.resource.data.name)
+        && validMoney(request.resource.data.basePrice)
+        && request.resource.data.categoryId is string
+        && request.resource.data.isActive is bool && request.resource.data.isAvailable is bool;
+      allow delete: if isAdmin();
+    }
+    match /productsPrivate/{id} { allow read, write: if isAdmin(); }
+
+    // ---------- settings ----------
+    match /settings/public {
+      allow read: if true;
+      allow write: if isAdmin() && validMoney(request.resource.data.deliveryFee);
+    }
+    match /settings/private { allow read, write: if isAdmin(); }
+
+    // ---------- customers ----------
+    match /customers/{uid} {
+      allow read: if isSelf(uid) || isAdmin();
+      allow create: if isSelf(uid)
+        && request.resource.data.keys().hasOnly(['displayName', 'phone', 'addresses', 'createdAt'])
+        && request.resource.data.displayName is string && request.resource.data.displayName.size() <= 80
+        && request.resource.data.createdAt == request.time;
+      allow update: if isSelf(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'phone', 'addresses'])
+        && request.resource.data.displayName is string && request.resource.data.displayName.size() <= 80;
+      allow delete: if false;
+    }
+
+    // ---------- orders: clients read only; all writes via Cloud Functions ----------
+    match /orders/{orderId} {
+      allow read: if (signedIn() && resource.data.customerId == request.auth.uid) || isStaff();
+      allow write: if false;
+      match /timeline/{eid} {
+        allow read: if (signedIn() && get(/databases/$(database)/documents/orders/$(orderId)).data.customerId == request.auth.uid) || isStaff();
+        allow write: if false;
+      }
+      // Contact details: kitchen deliberately excluded.
+      match /private/{doc} {
+        allow read: if (signedIn() && get(/databases/$(database)/documents/orders/$(orderId)).data.customerId == request.auth.uid)
+          || isAdmin() || (role() != null && role() in ['cashier', 'delivery']);
+        allow write: if false;
+      }
+    }
+
+    match /coupons/{id}              { allow read: if isAdmin(); allow write: if false; }
+    match /loyaltyTransactions/{id}  { allow read: if (signedIn() && resource.data.customerId == request.auth.uid) || isAdmin(); allow write: if false; }
+    match /staff/{uid}               { allow read: if isAdmin(); allow write: if false; }
+    match /auditLogs/{id}            { allow read: if isAdmin(); allow write: if false; }
+
+    // Everything else: denied by default.
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "tokyo-restaurant",
+  "private": true,
+  "version": "0.3.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test tests/cart.test.js",
+    "emulators": "firebase emulators:start --only auth,firestore,storage",
+    "seed": "node scripts/seed.mjs",
+    "test:rules": "firebase emulators:exec --only firestore \"node --test tests/rules.test.js\""
+  },
+  "dependencies": {
+    "firebase": "^10.14.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^3.0.4",
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.20",
+    "firebase-admin": "^12.6.0",
+    "firebase-tools": "^13.0.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.10"
+  }
+}
