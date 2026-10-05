@@ -9,7 +9,7 @@ const SLIDES = [
     title: 'طعم خارج عن المألوف',
     subtitle:
       'من الكريب اللذيذ إلى البيتزا المصرية، ومن الساندويتشات الشهية إلى المكرونات الغنية... كل وجبة تحكي قصة مختلفة.',
-    image: '/images/foter.webp',
+    image: '/images/tokyo.jpg',
     to: '/menu',
     alt: '/menu',
   },
@@ -29,6 +29,18 @@ const SLIDES = [
     to: '/menu#pies-pizza',
     alt: '/menu',
   },
+
+ 
+
+{
+
+  id: 's4',
+  title: 'برجر اكسترا تشييز',
+  subtitle: 'عصارة اللحم المشوي.. والجبن اللي يذوب! 🍔 لقمة وحدة تضبط مزاجك، اطلبها الحين!',
+  image: '/images/burger2.webp',
+  to: '/menu#pies-burger',
+  alt: '/menu',
+},
 ]
 
 const INTERVAL = 6000

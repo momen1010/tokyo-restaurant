@@ -9,7 +9,7 @@ export default function Footer() {
       <div className="container-page grid gap-8 py-10 sm:grid-cols-2">
         <div className="space-y-3">
           <Wordmark size="sm" />
-          <p className="max-w-xs text-paper/60">أكل شارع بنكهة سينمائية.</p>
+          <p className="max-w-xs text-paper/60">كل اللي بتحبه في مكان واحد</p>
         </div>
         <nav aria-label="الأقسام">
           <ul className="grid grid-cols-2 gap-2">
@@ -20,6 +20,9 @@ export default function Footer() {
         </nav>
       </div>
       <p className="border-t border-coal-line py-4 text-center text-sm text-paper/50">© TOKYO طوكيو</p>
+      <br />
+      <br />
+      <p><h1>develope by mo`men tarek</h1></p>
     </footer>
   )
 }
