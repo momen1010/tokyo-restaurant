@@ -1,27 +1,26 @@
-
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
-
+import CheckoutPage from '@/features/checkout/CheckoutPage.jsx'
 import CustomerLayout from './layouts/CustomerLayout.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
 
-import HomePage from '../features/home/HomePage.jsx'
-import MenuPage from '../features/menu/MenuPage.jsx'
+import HomePage from '@/features/home/HomePage.jsx'
+import MenuPage from '@/features/menu/MenuPage.jsx'
 
-import LoginPage from '../features/auth/LoginPage.jsx'
-import AccountPage from '../features/auth/AccountPage.jsx'
-import { RequireAuth, RequireAdmin } from '../features/auth/guards.jsx'
+import LoginPage from '@/features/auth/LoginPage.jsx'
+import AccountPage from '@/features/auth/AccountPage.jsx'
+import { RequireAuth, RequireAdmin } from '@/features/auth/guards.jsx'
 
-import AdminLoginPage from '../features/admin/auth/AdminLoginPage.jsx'
+import AdminLoginPage from '@/features/admin/auth/AdminLoginPage.jsx'
 
-import NotFound from '../shared/ui/NotFound.jsx'
+import NotFound from '@/shared/ui/NotFound.jsx'
 
 const AdminDashboard = lazy(
-  () => import('../features/admin/dashboard/AdminDashboard.jsx')
+  () => import('@/features/admin/dashboard/AdminDashboard.jsx')
 )
 
 const DesignSystemPage = lazy(
-  () => import('../features/design/DesignSystemPage.jsx')
+  () => import('@/features/design/DesignSystemPage.jsx')
 )
 
 const wait = (element) => (
@@ -43,6 +42,11 @@ export const router = createBrowserRouter(
         {
           path: '/menu',
           element: <MenuPage />,
+        },
+
+        {
+          path: '/checkout',
+          element: <CheckoutPage />,
         },
 
         {

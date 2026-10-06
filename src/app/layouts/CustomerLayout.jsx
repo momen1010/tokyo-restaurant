@@ -4,6 +4,10 @@ import Navbar from './parts/Navbar.jsx'
 import Footer from './parts/Footer.jsx'
 import CartDrawer from '../../features/cart/components/CartDrawer.jsx'
 
+import BackToTop from '@/shared/ui/BackToTop.jsx'
+
+
+<BackToTop />
 export default function CustomerLayout() {
   const { hash, pathname } = useLocation()
   // Scroll to #section links (e.g. /#offers) after navigation.

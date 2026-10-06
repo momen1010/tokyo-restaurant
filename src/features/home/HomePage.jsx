@@ -5,6 +5,8 @@ import { formatEGP } from '@/shared/lib/money.js'
 import { useMenu } from '@/features/menu/MenuProvider.jsx'
 import ProductArt from '@/features/menu/components/ProductArt.jsx'
 import HeroSlider from './components/HeroSlider.jsx'
+import WhyTokyo from './components/WhyTokyo.jsx'
+import OffersBanner from './components/OffersBanner.jsx'
 
 export default function HomePage() {
   const { categories, featured, loading } = useMenu()
@@ -17,6 +19,7 @@ export default function HomePage() {
         <p className="container-page py-14 text-paper/60">جاري تحميل المنيو...</p>
       ) : (
         <>
+          {/* Categories */}
           <section className="container-page py-14" aria-labelledby="cats">
             <h2 id="cats" className="mb-6 text-3xl font-bold">الأقسام</h2>
             <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -36,6 +39,7 @@ export default function HomePage() {
             </ul>
           </section>
 
+          {/* Featured */}
           <section className="container-page pb-16" aria-labelledby="feat">
             <div className="mb-6 flex items-center justify-between">
               <h2 id="feat" className="text-3xl font-bold">ابدأ من هنا</h2>
@@ -59,6 +63,10 @@ export default function HomePage() {
           </section>
         </>
       )}
+
+      {/* Sections that don't depend on menu loading */}
+      <WhyTokyo />
+      <OffersBanner />
     </>
   )
 }

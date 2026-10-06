@@ -1,18 +1,17 @@
-
 import { initializeApp, getApps } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
 import { getStorage, connectStorageEmulator } from 'firebase/storage'
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions'
 
+// Read config from environment variables (Vite)
 const firebaseConfig = {
-  apiKey: "AIzaSyD8riKj1cRU6QZL-6oRcJwMhpbZhlwim2s",
-  authDomain: "tokyo-bd717.firebaseapp.com",
-  projectId: "tokyo-bd717",
-  storageBucket: "tokyo-bd717.firebasestorage.app",
-  messagingSenderId: "484890478858",
-  appId: "1:484890478858:web:b3e9d4f9c1af834eb252f3",
-  measurementId: "G-TKX9C96GDT"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
 /**
@@ -68,10 +67,7 @@ export const getAuthClient = () =>
     'auth',
     getAuth,
     (auth) => {
-      connectAuthEmulator(
-        auth,
-        'http://127.0.0.1:9099'
-      )
+      connectAuthEmulator(auth, 'http://127.0.0.1:9099')
     }
   )
 
@@ -83,11 +79,7 @@ export const getDb = () =>
     'db',
     getFirestore,
     (db) => {
-      connectFirestoreEmulator(
-        db,
-        '127.0.0.1',
-        8080
-      )
+      connectFirestoreEmulator(db, '127.0.0.1', 8080)
     }
   )
 
@@ -99,11 +91,7 @@ export const getStorageClient = () =>
     'storage',
     getStorage,
     (storage) => {
-      connectStorageEmulator(
-        storage,
-        '127.0.0.1',
-        9199
-      )
+      connectStorageEmulator(storage, '127.0.0.1', 9199)
     }
   )
 
@@ -115,11 +103,12 @@ export const getFunctionsClient = () =>
     'functions',
     getFunctions,
     (functions) => {
-      connectFunctionsEmulator(
-        functions,
-        '127.0.0.1',
-        5001
-      )
+      connectFunctionsEmulator(functions, '127.0.0.1', 5001)
     }
   )
 
+/** Debug info (dev only) */
+if (import.meta.env.DEV) {
+  console.log('[firebase] mode:', useEmulators ? 'EMULATOR' : 'PRODUCTION')
+  console.log('[firebase] project:', firebaseConfig.projectId)
+}
