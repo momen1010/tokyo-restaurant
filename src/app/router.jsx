@@ -6,7 +6,7 @@ import AdminLayout from './layouts/AdminLayout.jsx'
 import TrackOrderPage from '@/features/tracking/TrackOrderPage.jsx'
 import HomePage from '@/features/home/HomePage.jsx'
 import MenuPage from '@/features/menu/MenuPage.jsx'
-
+import ProductsPage from '@/features/admin/products/ProductsPage.jsx'
 import LoginPage from '@/features/auth/LoginPage.jsx'
 import AccountPage from '@/features/auth/AccountPage.jsx'
 import { RequireAuth, RequireAdmin } from '@/features/auth/guards.jsx'
@@ -86,7 +86,18 @@ export const router = createBrowserRouter(
       path: '/admin/login',
       element: <AdminLoginPage />,
     },
-
+    {
+      path: '/admin',
+      element: (
+        <RequireAdmin>
+          <AdminLayout />
+        </RequireAdmin>
+      ),
+      children: [
+        { index: true, element: wait(<AdminDashboard />) },
+        { path: 'products', element: wait(<ProductsPage />) },  // ← جديد
+      ],
+    },
     {
       path: '/admin',
       element: (

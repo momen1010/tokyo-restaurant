@@ -7,7 +7,7 @@ import ProductArt from '@/features/menu/components/ProductArt.jsx'
 import HeroSlider from './components/HeroSlider.jsx'
 import WhyTokyo from './components/WhyTokyo.jsx'
 import OffersBanner from './components/OffersBanner.jsx'
-
+import Testimonials from './components/Testimonials.jsx'
 export default function HomePage() {
   const { categories, featured, loading } = useMenu()
 
@@ -66,7 +66,8 @@ export default function HomePage() {
 
       {/* Sections that don't depend on menu loading */}
       <WhyTokyo />
-      <OffersBanner />
+       <OffersBanner />
+      <Testimonials />    
     </>
   )
 }
