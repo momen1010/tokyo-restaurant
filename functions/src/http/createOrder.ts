@@ -98,7 +98,20 @@ export const createOrderCallable = onCall(
   {
     region: 'us-central1',
     enforceAppCheck: false,
-    cors: true,
+    cors: [
+      // Local dev
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      'http://localhost:5176',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
+      'http://127.0.0.1:5175',
+      // Production (Vercel)
+      'https://tokyo-restaurant-eight.vercel.app',
+      'https://tokyo-restaurant-bfpeh33wl-memo70931-6754.vercel.app',
+      // Vercel preview deployments (regex not supported here — add specific ones as needed)
+    ],
   },
   async (req: CallableRequest<unknown>): Promise<CreateOrderResult> => {
     try {

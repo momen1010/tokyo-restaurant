@@ -35,7 +35,6 @@ export default function ConfirmationStep({ order, onBack, onConfirm, submitting,
 
   return (
     <div className="space-y-5">
-      {/* Delivery */}
       <Section title="بيانات التوصيل">
         <div className="space-y-1">
           <Row label="الاسم" value={order.customerName} />
@@ -48,7 +47,6 @@ export default function ConfirmationStep({ order, onBack, onConfirm, submitting,
         </div>
       </Section>
 
-      {/* Payment */}
       <Section title="طريقة الدفع">
         <Row label="الطريقة" value={PAYMENT_LABEL[order.paymentMethod]} />
         {order.paymentMethod === PAYMENT_METHODS.ONLINE && (
@@ -59,7 +57,6 @@ export default function ConfirmationStep({ order, onBack, onConfirm, submitting,
         )}
       </Section>
 
-      {/* Items */}
       <Section title="تفاصيل الطلب">
         <ul className="space-y-2">
           {lines.map((l, i) => (
@@ -103,7 +100,6 @@ export default function ConfirmationStep({ order, onBack, onConfirm, submitting,
         )}
       </Section>
 
-      {/* Error */}
       {error && (
         <div
           role="alert"
@@ -113,7 +109,6 @@ export default function ConfirmationStep({ order, onBack, onConfirm, submitting,
         </div>
       )}
 
-      {/* Actions */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Button from '@/shared/ui/Button.jsx'
 import { useCart } from '@/features/cart/CartProvider.jsx'
-import { useAuth } from '@/features/auth/AuthProvider.jsx'
 import CheckoutStepper from './components/CheckoutStepper.jsx'
 import DeliveryForm from './components/DeliveryForm.jsx'
 import OrderSummary from './components/OrderSummary.jsx'
@@ -18,18 +17,17 @@ import {
   PAYMENT_METHODS,
 } from './domain/orderModel.js'
 import { PAYMENT_CONFIG } from './domain/paymentConfig.js'
-import { placeOrder, describeOrderError } from './services/orderService.js'
-import { buildWhatsAppMessage, buildWhatsAppLink } from './domain/whatsappMessage.js'
+import { placeOrder } from './services/orderService.js'
+import { buildWhatsAppMessage } from './domain/whatsappMessage.js'
 
 export default function CheckoutPage() {
-  const { items, summary, orderType } = useCart()
-  const { user } = useAuth()
+  const { items, summary, orderType, clear } = useCart()
   const [order, setOrder] = useState(createEmptyOrder())
   const [errors, setErrors] = useState({})
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
-  const [result, setResult] = useState(null)   // { orderId, orderNumber, total }
+  const [result, setResult] = useState(null)
   const [waMessage, setWaMessage] = useState(null)
 
   const updateField = (key, value) => {
@@ -54,6 +52,11 @@ export default function CheckoutPage() {
     setSubmitError(null)
     setSubmitting(true)
     try {
+      const totals = {
+        subtotal: summary.subtotal,
+        deliveryFee: summary.deliveryFee,
+        total: summary.total,
+      }
       const res = await placeOrder({
         items,
         customer: {
@@ -64,9 +67,10 @@ export default function CheckoutPage() {
         },
         orderType: order.deliveryType,
         paymentMethod: order.paymentMethod,
+        totals,
       })
 
-      // Build WhatsApp message from the SERVER response (prices trusted)
+      // Build WhatsApp message
       const lines = summary.lines.map((l) => ({
         productName: l.product?.name ?? '—',
         qty: l.line.qty,
@@ -82,35 +86,36 @@ export default function CheckoutPage() {
         },
         orderType: order.deliveryType,
         paymentMethod: order.paymentMethod,
-        totals: {
-          subtotal: summary.subtotal,
-          deliveryFee: summary.deliveryFee,
-          total: res.total,
-        },
+        totals,
         orderNumber: res.orderNumber,
       })
 
       setResult(res)
       setWaMessage(message)
+
+      // Clear cart after successful "placement"
+      clear()
     } catch (err) {
-      setSubmitError(describeOrderError(err))
+      setSubmitError(err?.message || 'حدث خطأ غير متوقع.')
     } finally {
       setSubmitting(false)
     }
   }
 
-  // ---- Success state ----
   if (result) {
     return (
       <div className="container-page py-14 sm:py-20">
-        <SuccessScreen result={result} waMessage={waMessage} waPhone={PAYMENT_CONFIG.whatsapp.number} />
+        <SuccessScreen
+          result={result}
+          waMessage={waMessage}
+          waPhone={PAYMENT_CONFIG.whatsapp.number}
+        />
       </div>
     )
   }
 
   return (
     <div className="container-page py-10 sm:py-14">
-      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <Link to="/menu" className="text-sm text-paper/60 hover:text-blood-bright">
           ← العودة للمنيو
@@ -119,12 +124,10 @@ export default function CheckoutPage() {
         <span className="w-24" aria-hidden />
       </div>
 
-      {/* Stepper */}
       <div className="mb-10">
         <CheckoutStepper current={step} />
       </div>
 
-      {/* Content */}
       <div className="grid gap-8 lg:grid-cols-[1fr,380px]">
         <AnimatePresence mode="wait">
           <motion.div
