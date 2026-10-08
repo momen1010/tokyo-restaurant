@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Button from '@/shared/ui/Button.jsx'
 import { useCart } from '@/features/cart/CartProvider.jsx'
@@ -10,25 +10,23 @@ import PaymentMethodPicker from './components/PaymentMethodPicker.jsx'
 import CashOnDelivery from './components/CashOnDelivery.jsx'
 import OnlinePayment from './components/OnlinePayment.jsx'
 import ConfirmationStep from './components/ConfirmationStep.jsx'
-import SuccessScreen from './components/SuccessScreen.jsx'
 import {
   createEmptyOrder,
   validateDeliveryForm,
   PAYMENT_METHODS,
 } from './domain/orderModel.js'
 import { PAYMENT_CONFIG } from './domain/paymentConfig.js'
-import { placeOrder } from './services/orderService.js'
-import { buildWhatsAppMessage } from './domain/whatsappMessage.js'
+import { placeOrder, describeOrderError } from './services/orderService.js'
+import { buildWhatsAppMessage, buildWhatsAppLink } from './domain/whatsappMessage.js'
 
 export default function CheckoutPage() {
-  const { items, summary, orderType, clear } = useCart()
+  const navigate = useNavigate()
+  const { items, summary, clear } = useCart()
   const [order, setOrder] = useState(createEmptyOrder())
   const [errors, setErrors] = useState({})
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
-  const [result, setResult] = useState(null)
-  const [waMessage, setWaMessage] = useState(null)
 
   const updateField = (key, value) => {
     setOrder((o) => ({ ...o, [key]: value }))
@@ -57,8 +55,18 @@ export default function CheckoutPage() {
         deliveryFee: summary.deliveryFee,
         total: summary.total,
       }
+
+      const itemsWithPrices = summary.lines.map((l) => ({
+        productId: l.line.productId,
+        variantId: l.line.variantId,
+        addOnIds: l.line.addOnIds ?? [],
+        qty: l.line.qty,
+        price: l.lineTotal ?? 0,
+      }))
+
+      // 1. Save to Firestore
       const res = await placeOrder({
-        items,
+        items: itemsWithPrices,
         customer: {
           name: order.customerName,
           phone: order.customerPhone,
@@ -70,7 +78,7 @@ export default function CheckoutPage() {
         totals,
       })
 
-      // Build WhatsApp message
+      // 2. Build WhatsApp message
       const lines = summary.lines.map((l) => ({
         productName: l.product?.name ?? '—',
         qty: l.line.qty,
@@ -90,28 +98,20 @@ export default function CheckoutPage() {
         orderNumber: res.orderNumber,
       })
 
-      setResult(res)
-      setWaMessage(message)
+      // 3. Open WhatsApp directly
+      const waUrl = buildWhatsAppLink(message, PAYMENT_CONFIG.whatsapp.number)
+      window.open(waUrl, '_blank', 'noopener,noreferrer')
 
-      // Clear cart after successful "placement"
+      // 4. Clear cart
       clear()
+
+      // 5. Navigate to Home with success toast? Or simple redirect.
+      // For now: redirect to Home.
+      navigate('/', { replace: true })
     } catch (err) {
-      setSubmitError(err?.message || 'حدث خطأ غير متوقع.')
-    } finally {
+      setSubmitError(describeOrderError(err))
       setSubmitting(false)
     }
-  }
-
-  if (result) {
-    return (
-      <div className="container-page py-14 sm:py-20">
-        <SuccessScreen
-          result={result}
-          waMessage={waMessage}
-          waPhone={PAYMENT_CONFIG.whatsapp.number}
-        />
-      </div>
-    )
   }
 
   return (

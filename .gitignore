@@ -8,3 +8,9 @@ serviceAccountKey*.json
 firebase-debug.log
 functions/lib
 functions/node_modules
+
+service-account-key.json
+*service-account*.json
+*firebase-adminsdk*.json
+.env
+.env.local

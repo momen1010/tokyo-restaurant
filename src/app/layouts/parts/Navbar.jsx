@@ -9,6 +9,7 @@ import { useAuth } from '@/features/auth/AuthProvider.jsx'
 const LINKS = [
   { to: '/', label: 'الرئيسية', end: true },
   { to: '/menu', label: 'المنيو' },
+  { to: '/track-order', label: 'تتبع الطلب' },
   { to: '/#offers', label: 'العروض', hash: true },
   { to: '/#why', label: 'عن طوكيو', hash: true },
   { to: '/#contact', label: 'تواصل معنا', hash: true },
@@ -81,15 +82,19 @@ export default function Navbar() {
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       <div className="container-page flex h-16 items-center justify-between gap-3">
+        {/* Logo */}
         <Link to="/" aria-label="طوكيو - الرئيسية" className="shrink-0">
           <Wordmark size="sm" />
         </Link>
 
+        {/* Nav links (desktop) */}
         <nav aria-label="التنقل الرئيسي" className="hidden items-center lg:flex">
           {items()}
         </nav>
 
+        {/* Icons */}
         <div className="flex items-center gap-1">
+          {/* Search (placeholder) */}
           <IconButton label="البحث" size="md" className="hidden sm:inline-grid">
             <Icon>
               <circle cx="11" cy="11" r="7" />
@@ -97,6 +102,7 @@ export default function Navbar() {
             </Icon>
           </IconButton>
 
+          {/* User / Login */}
           <IconButton
             to={user ? '/account' : '/login'}
             label={user ? 'حسابي' : 'تسجيل الدخول'}
@@ -108,6 +114,7 @@ export default function Navbar() {
             </Icon>
           </IconButton>
 
+          {/* Cart */}
           <IconButton label={`السلة، ${count} عناصر`} size="md" onClick={openDrawer}>
             <Icon>
               <path d="M6 6h15l-1.5 9h-12z" />
@@ -122,6 +129,7 @@ export default function Navbar() {
             )}
           </IconButton>
 
+          {/* Hamburger (mobile) */}
           <IconButton
             label="القائمة"
             size="md"
@@ -135,6 +143,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile Drawer */}
       <Drawer open={menuOpen} onClose={close} title="القائمة">
         <nav
           aria-label="القائمة"

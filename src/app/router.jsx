@@ -3,7 +3,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import CheckoutPage from '@/features/checkout/CheckoutPage.jsx'
 import CustomerLayout from './layouts/CustomerLayout.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
-
+import TrackOrderPage from '@/features/tracking/TrackOrderPage.jsx'
 import HomePage from '@/features/home/HomePage.jsx'
 import MenuPage from '@/features/menu/MenuPage.jsx'
 
@@ -53,7 +53,10 @@ export const router = createBrowserRouter(
           path: '/login',
           element: <LoginPage />,
         },
-
+        {
+          path: '/track-order',
+          element: <TrackOrderPage />,
+        },
         {
           path: '/account',
           element: (

@@ -13,8 +13,17 @@ const PAYMENT_LABEL = {
 }
 
 /**
+ * Build the public tracking URL for an order.
+ * Change APP_URL if you deploy to a custom domain.
+ */
+function buildTrackUrl(orderNumber) {
+  const base = import.meta.env.VITE_APP_URL || window.location.origin
+  return `${base}/track-order?order=${encodeURIComponent(orderNumber)}`
+}
+
+/**
  * @param {Object} args
- * @param {Array} args.lines - priced lines from server response or client summary
+ * @param {Array} args.lines - priced lines from client summary
  * @param {Object} args.customer - { name, phone, address, notes }
  * @param {'delivery'|'pickup'} args.orderType
  * @param {'cash'|'online'} args.paymentMethod
@@ -27,7 +36,9 @@ export function buildWhatsAppMessage({ lines, customer, orderType, paymentMethod
     .map((l) => `• ${l.productName} ×${l.qty} — ${fmt(l.lineTotal)}`)
     .join(nl)
 
-  const lines_ = [
+  const trackUrl = buildTrackUrl(orderNumber)
+
+  const content = [
     `🍜 *طلب جديد من طوكيو*`,
     ``,
     `📋 *رقم الطلب:* ${orderNumber}`,
@@ -48,11 +59,21 @@ export function buildWhatsAppMessage({ lines, customer, orderType, paymentMethod
     paymentMethod === PAYMENT_METHODS.ONLINE
       ? `📎 (صورة الإيصال في المرفقات)`
       : null,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `🔗 *تتبع طلبك من هنا:*`,
+    trackUrl,
+    `━━━━━━━━━━━━━━━━━━━━`,
   ].filter(Boolean)
 
-  return lines_.join(nl)
+  return content.join(nl)
 }
 
 export function buildWhatsAppLink(message, phone = PAYMENT_CONFIG.whatsapp.number) {
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }
+
+/**
+ * Build the tracking URL — exported so TrackOrderPage can read the order param.
+ */
+export { buildTrackUrl }
